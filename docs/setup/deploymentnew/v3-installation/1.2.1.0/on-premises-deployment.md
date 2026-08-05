@@ -244,7 +244,7 @@ helm install \
   --namespace ingress-nginx \
   --version 4.10.0 \
   --create-namespace \
-  -f ingress-nginx.values.yaml
+  -f ingress-nginx-np.values.yaml
 ```
 
 > **Note:**
@@ -322,7 +322,7 @@ sudo ./install-nfs-server.sh
 
 ```bash
 cd $K8_ROOT/storage-class/nfs/
-./install-nfs-client-provisioner.sh
+./install-nfs-csi.sh
 ```
 
 > **Note:** The script will prompt for:
@@ -334,7 +334,7 @@ cd $K8_ROOT/storage-class/nfs/
   * Check the status of the NFS Client Provisioner:
 
 ```bash
-kubectl -n nfs get deployment.apps/nfs-client-provisioner
+kubectl -n nfs get deployment.apps/csi-nfs-controller
 ```
 
 * Check the storage class is registered:
@@ -346,15 +346,9 @@ kubectl get storageclass
 Expected output:
 
 ```
-NAME                 PROVISIONER                            RECLAIMPOLICY   VOLUMEBINDINGMODE   ALLOWVOLUMEEXPANSION   AGE
-longhorn (default)   driver.longhorn.io                     Delete          Immediate           true                   57d
-nfs-client           cluster.local/nfs-client-provisioner   Delete          Immediate           true                   40s
-```
-
-* Set `nfs-client` as the default storage class:
-
-```bash
-kubectl patch storageclass nfs-client -p '{"metadata": {"annotations":{"storageclass.kubernetes.io/is-default-class":"true"}}}'
+NAME                  PROVISIONER                            RECLAIMPOLICY   VOLUMEBINDINGMODE   ALLOWVOLUMEEXPANSION   AGE
+longhorn           driver.longhorn.io                     Delete          Immediate           true                   57d
+nfs-csi (default)  cluster.local/nfs-client-provisioner   Delete          Immediate           true                   40s
 ```
 
 ***
@@ -487,10 +481,10 @@ Keycloak is an OAuth 2.0-compliant Identity and Access Management (IAM) system u
 
 ```bash
 cd $K8_ROOT/observation/keycloak
-./install.sh <iam.host.name>
+./install.sh <keycloak.host.name>
 ```
 
-After installation, access Keycloak at `iam.mosip.net` and retrieve credentials as per the post-installation steps.
+After installation, access Keycloak at `keycloak.mosip.net` and retrieve credentials as per the post-installation steps.
 
 #### 5.c. Keycloak — Rancher UI Integration
 
@@ -803,7 +797,7 @@ sudo ./install-nfs-server.sh
 
 ```bash
 cd $K8_ROOT/storage-class/nfs/
-./install-nfs-client-provisioner.sh
+./install-nfs-csi.sh
 ```
 
 > **Note:** The script will prompt for:
@@ -815,7 +809,7 @@ cd $K8_ROOT/storage-class/nfs/
   * Check the status of the NFS Client Provisioner:
 
 ```bash
-kubectl -n nfs get deployment.apps/nfs-client-provisioner
+kubectl -n nfs get deployment.apps/csi-nfs-controller
 ```
 
 * Check the storage class is registered:
